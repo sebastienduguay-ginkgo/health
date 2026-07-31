@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>5KM Training Plan — 12 Weeks to Continuous 5KM</title>
+  <meta name="description" content="Progressive 12-week run/walk training plan for a 50-year-old targeting continuous 5KM. Built from real FIT file data."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════ */
+    :root {
+      --bg:          #0d1117;
+      --surface:     #161b22;
+      --card:        #1c2330;
+      --border:      rgba(255,255,255,0.08);
+      --run:         #22c55e;
+      --run-dark:    #16a34a;
+      --run-glow:    rgba(34,197,94,0.2);
+      --walk:        #3b82f6;
+      --walk-dark:   #2563eb;
+      --recover:     #f59e0b;
+      --text:        #e6edf3;
+      --muted:       #8b949e;
+      --accent:      #58a6ff;
+      --purple:      #a78bfa;
+      --hr-line:     rgba(255,255,255,0.06);
+      /* Phase colours */
+      --p1:          #22c55e;
+      --p2:          #3b82f6;
+      --p3:          #a78bfa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 100px;
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    .hero {
+      background: linear-gradient(160deg, #0d1117 0%, #111827 40%, #0d1f3c 100%);
+      padding: 64px 24px 52px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 50%, rgba(34,197,94,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 50%, rgba(88,166,255,0.09) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 0%, rgba(167,139,250,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero > * { position: relative; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 99px; padding: 6px 18px;
+      font-size: 11px; font-weight: 700; color: var(--run);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800; line-height: 1.08;
+      background: linear-gradient(135deg, #e6edf3 20%, #a78bfa 60%, #58a6ff 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      color: var(--muted); font-size: 16px; line-height: 1.7;
+      max-width: 540px; margin: 0 auto 36px;
+    }
+
+    /* PROGRESS ARC */
+    .arc-wrap {
+      display: inline-block; position: relative;
+      margin-bottom: 32px;
+    }
+    .arc-wrap svg { display: block; }
+    .arc-center {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -44%);
+      text-align: center;
+    }
+    .arc-center .val { font-size: 28px; font-weight: 800; color: var(--run); line-height: 1; }
+    .arc-center .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* STAT CHIPS */
+    .stats-row {
+      display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+    }
+    .stat-chip {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 18px; text-align: center; min-width: 100px;
+    }
+    .stat-chip .val { font-size: 20px; font-weight: 800; color: var(--accent); display: block; }
+    .stat-chip .lbl { font-size: 11px; color: var(--muted); margin-top: 3px; display: block; }
+
+    /* ═══════════════════════════════════════════
+       PHASES OVERVIEW
+    ═══════════════════════════════════════════ */
+    .phases-bar {
+      display: flex; border-bottom: 1px solid var(--hr-line);
+      background: rgba(13,17,23,0.7); backdrop-filter: blur(12px);
+    }
+    .phase-tab {
+      flex: 1; padding: 14px 12px; text-align: center;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border-bottom: 3px solid transparent;
+      color: var(--muted); transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .phase-tab:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .phase-tab.p1.active { color: var(--p1); border-color: var(--p1); }
+    .phase-tab.p2.active { color: var(--p2); border-color: var(--p2); }
+    .phase-tab.p3.active { color: var(--p3); border-color: var(--p3); }
+    .phase-tab.all.active { color: var(--accent); border-color: var(--accent); }
+
+    /* ═══════════════════════════════════════════
+       STICKY NAV
+    ═══════════════════════════════════════════ */
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(13,17,23,0.9); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--hr-line);
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 20px; overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .sticky-nav::-webkit-scrollbar { display: none; }
+    .nav-week-btn {
+      flex-shrink: 0;
+      font-size: 11px; font-weight: 600; padding: 5px 14px;
+      border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      cursor: pointer; transition: all 0.18s; white-space: nowrap;
+    }
+    .nav-week-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .nav-week-btn.active { background: rgba(88,166,255,0.12); border-color: rgba(88,166,255,0.4); color: var(--accent); }
+    .nav-week-btn.phase-p1.active { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.4); color: var(--p1); }
+    .nav-week-btn.phase-p2.active { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.4); color: var(--p2); }
+    .nav-week-btn.phase-p3.active { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.4); color: var(--p3); }
+    .nav-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; margin: 0 2px; }
+
+    /* LEGEND */
+    .legend {
+      display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+      padding: 14px 24px; border-bottom: 1px solid var(--hr-line);
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+    .leg-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    /* ═══════════════════════════════════════════
+       PHASE HEADER
+    ═══════════════════════════════════════════ */
+    .phase-header {
+      display: flex; align-items: center; gap: 16px;
+      padding: 32px 24px 20px;
+      max-width: 980px; margin: 0 auto;
+    }
+    .phase-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .phase-icon.p1 { background: rgba(34,197,94,0.15); }
+    .phase-icon.p2 { background: rgba(59,130,246,0.15); }
+    .phase-icon.p3 { background: rgba(167,139,250,0.15); }
+    .phase-meta { flex: 1; }
+    .phase-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .phase-label.p1 { color: var(--p1); }
+    .phase-label.p2 { color: var(--p2); }
+    .phase-label.p3 { color: var(--p3); }
+    .phase-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px; font-weight: 700; color: var(--text);
+    }
+    .phase-desc { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .phase-weeks-pill {
+      flex-shrink: 0; font-size: 12px; font-weight: 600;
+      padding: 6px 14px; border-radius: 99px;
+      border: 1px solid var(--border); color: var(--muted);
+    }
+
+    /* ═══════════════════════════════════════════
+       WEEK CARD
+    ═══════════════════════════════════════════ */
+    .container { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+
+    .week-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; margin-bottom: 24px; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .week-card:hover { transform: translateY(-2px); box-shadow: 0 12px 48px rgba(0,0,0,0.45); }
+
+    /* left accent stripe */
+    .week-card.p1 { border-left: 3px solid var(--p1); }
+    .week-card.p2 { border-left: 3px solid var(--p2); }
+    .week-card.p3 { border-left: 3px solid var(--p3); }
+    .week-card.recover { border-left: 3px solid var(--recover); }
+    .week-card.race { border-left: 3px solid gold; }
+
+    .week-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px; border-bottom: 1px solid var(--hr-line);
+      gap: 12px; flex-wrap: wrap;
+    }
+    .week-num-badge {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .badge-p1 { background: rgba(34,197,94,0.15); color: var(--p1); }
+    .badge-p2 { background: rgba(59,130,246,0.15); color: var(--p2); }
+    .badge-p3 { background: rgba(167,139,250,0.15); color: var(--p3); }
+    .badge-rec { background: rgba(245,158,11,0.15); color: var(--recover); }
+    .badge-race { background: rgba(255,215,0,0.15); color: gold; }
+
+    .week-title-wrap { flex: 1; }
+    .week-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .week-dates { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .week-tag {
+      font-size: 10px; font-weight: 700; padding: 4px 12px;
+      border-radius: 99px; letter-spacing: 0.07em; text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .tag-build   { background: rgba(34,197,94,0.12); color: var(--p1); border: 1px solid rgba(34,197,94,0.25); }
+    .tag-recover { background: rgba(245,158,11,0.12); color: var(--recover); border: 1px solid rgba(245,158,11,0.25); }
+    .tag-race    { background: rgba(255,215,0,0.12); color: gold; border: 1px solid rgba(255,215,0,0.3); }
+
+    /* SESSIONS */
+    .sessions-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+    }
+    .session-col {
+      padding: 20px 22px 24px;
+      border-right: 1px solid var(--hr-line);
+      transition: background 0.15s;
+    }
+    .session-col:last-child { border-right: none; }
+    .session-col:hover { background: rgba(255,255,255,0.015); }
+
+    .sess-type-bar { height: 3px; border-radius: 99px; margin-bottom: 14px; }
+    .bar-regular { background: linear-gradient(90deg, var(--run-dark), var(--run)); }
+    .bar-long    { background: linear-gradient(90deg, #7c3aed, var(--purple)); }
+    .bar-recover { background: linear-gradient(90deg, #92400e, var(--recover)); }
+    .bar-race    { background: linear-gradient(90deg, #854d0e, gold); }
+    .bar-rest    { background: rgba(255,255,255,0.1); }
+
+    .sess-label { font-size: 10px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .sess-day { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+    .sess-date-span { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+    .intervals { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .interval-row { display: flex; align-items: center; gap: 7px; }
+    .pill {
+      flex: 1; display: flex; align-items: center; gap: 6px;
+      border-radius: 8px; padding: 7px 10px;
+      font-size: 12px; font-weight: 600; transition: transform 0.15s;
+    }
+    .pill:hover { transform: scale(1.02); }
+    .pill-run  { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: var(--run); }
+    .pill-walk { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: var(--walk); }
+    .pill-rest { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--muted); }
+    .pill-time { font-size: 14px; font-weight: 700; }
+    .pill-lbl  { font-size: 11px; opacity: 0.7; }
+    .pill-icon { font-size: 14px; }
+    .reps-badge {
+      font-size: 11px; font-weight: 700; padding: 2px 8px;
+      border-radius: 99px; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); color: var(--muted); white-space: nowrap;
+    }
+
+    .sess-totals { display: flex; flex-direction: column; gap: 5px; }
+    .total-line { font-size: 11px; color: var(--muted); }
+    .total-line strong { color: var(--text); font-weight: 600; }
+    .total-note { font-size: 11px; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-top: 4px; }
+    .note-milestone { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+    .note-race      { background: rgba(255,215,0,0.1); color: gold; border: 1px solid rgba(255,215,0,0.25); }
+    .note-recover   { background: rgba(245,158,11,0.1); color: var(--recover); border: 1px solid rgba(245,158,11,0.2); }
+    .note-run       { background: rgba(34,197,94,0.1); color: var(--run); border: 1px solid rgba(34,197,94,0.2); }
+
+    /* SESSION - RACE special */
+    .race-session {
+      padding: 28px 24px; text-align: center;
+      background: linear-gradient(135deg, rgba(255,215,0,0.04), rgba(167,139,250,0.04));
+    }
+    .race-icon { font-size: 52px; margin-bottom: 12px; }
+    .race-title { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 800; color: gold; margin-bottom: 8px; }
+    .race-sub { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* WEEK FOOTER */
+    .week-footer {
+      padding: 14px 24px; border-top: 1px solid var(--hr-line);
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      background: rgba(0,0,0,0.12);
+    }
+    .foot-stat { font-size: 12px; color: var(--muted); }
+    .foot-stat strong { color: var(--text); }
+    .foot-focus { margin-left: auto; font-size: 12px; color: var(--muted); font-style: italic; max-width: 360px; text-align: right; }
+
+    /* ═══════════════════════════════════════════
+       MILESTONE TIMELINE
+    ═══════════════════════════════════════════ */
+    .timeline-section { max-width: 980px; margin: 40px auto 0; padding: 0 16px; }
+    .section-title {
+      font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 700;
+      color: var(--text); margin-bottom: 20px;
+    }
+    .timeline {
+      position: relative; padding-left: 28px;
+      border-left: 2px solid var(--border);
+    }
+    .tl-item {
+      position: relative; padding-bottom: 28px;
+    }
+    .tl-dot {
+      position: absolute; left: -35px; top: 3px;
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid var(--bg);
+    }
+    .tl-dot.p1 { background: var(--p1); box-shadow: 0 0 8px var(--run-glow); }
+    .tl-dot.p2 { background: var(--p2); }
+    .tl-dot.p3 { background: var(--p3); }
+    .tl-dot.gold { background: gold; box-shadow: 0 0 8px rgba(255,215,0,0.4); }
+    .tl-week { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 3px; }
+    .tl-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .tl-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+
+    /* ═══════════════════════════════════════════
+       TIPS GRID
+    ═══════════════════════════════════════════ */
+    .tips-section { max-width: 980px; margin: 40px auto 0; padding: 0 16px; }
+    .tips-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .tip-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 20px;
+    }
+    .tip-card h4 { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; }
+    .tip-card p  { font-size: 12px; color: var(--muted); line-height: 1.65; }
+
+    /* ═══════════════════════════════════════════
+       HR ZONE SECTION
+    ═══════════════════════════════════════════ */
+    .hrz-section { max-width: 980px; margin: 36px auto 0; padding: 0 16px 60px; }
+    .hrz-bar { display: flex; border-radius: 10px; overflow: hidden; height: 32px; margin: 12px 0 6px; font-size: 10px; }
+    .hrz { display: flex; align-items: center; justify-content: center; font-weight: 700; color: rgba(0,0,0,0.75); }
+    .hrz-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+    @media (max-width: 680px) {
+      .sessions-grid { grid-template-columns: 1fr; }
+      .session-col { border-right: none !important; border-bottom: 1px solid var(--hr-line); }
+      .session-col:last-child { border-bottom: none; }
+      .phases-bar { overflow-x: auto; }
+      .hero h1 { font-size: 1.9rem; }
+    }
+
+    /* ═══════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════ */
+    .week-card { animation: fadeUp 0.4s ease both; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PRINT */
+    @media print {
+      .sticky-nav, .phases-bar { display: none; }
+      body { background: white; color: black; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">🏃 5KM Journey · Full 13-Week Plan</div>
+  <h1>From Intervals to 5KM</h1>
+  <p>A progressive 13-week run/walk plan built from your 18 logged sessions.<br/>
+  Starting July 21 · Goal Race Day: October 18, 2026.</p>
+
+  <!-- ARC PROGRESS -->
+  <div class="arc-wrap">
+    <svg width="180" height="110" viewBox="0 0 180 110">
+      <defs>
+        <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#16a34a"/>
+          <stop offset="100%" stop-color="#22c55e"/>
+        </linearGradient>
+      </defs>
+      <!-- background arc -->
+      <path d="M 20 95 A 70 70 0 0 1 160 95" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10" stroke-linecap="round"/>
+      <!-- filled arc (7.5% = ~13.5deg of 180deg arc) -->
+      <path d="M 20 95 A 70 70 0 0 1 160 95" fill="none" stroke="url(#arcGrad)" stroke-width="10" stroke-linecap="round"
+        stroke-dasharray="220" stroke-dashoffset="203.5">
+        <animate attributeName="stroke-dashoffset" from="220" to="203.5" dur="1.5s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1"/>
+      </path>
+    </svg>
+    <div class="arc-center">
+      <div class="val">7.5%</div>
+      <div class="lbl">to 5 km</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-chip"><span class="val">18</span><span class="lbl">Sessions logged</span></div>
+    <div class="stat-chip"><span class="val">377 m</span><span class="lbl">Best continuous run</span></div>
+    <div class="stat-chip"><span class="val">−12 bpm</span><span class="lbl">HR drop (11 weeks)</span></div>
+    <div class="stat-chip"><span class="val">Oct 18</span><span class="lbl">Target race day</span></div>
+  </div>
+</div>
+
+<!-- PHASE TABS -->
+<div class="phases-bar" id="phase-tabs">
+  <div class="phase-tab all active" onclick="filterPhase('all', this)">All Phases</div>
+  <div class="phase-tab p1" onclick="filterPhase('p1', this)">Phase 1 — Build Endurance</div>
+  <div class="phase-tab p2" onclick="filterPhase('p2', this)">Phase 2 — Extend Blocks</div>
+  <div class="phase-tab p3" onclick="filterPhase('p3', this)">Phase 3 — Near-Continuous</div>
+</div>
+
+<!-- STICKY WEEK NAV -->
+<nav class="sticky-nav" id="sticky-nav"></nav>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="leg-dot" style="background:var(--run)"></div>Running</div>
+  <div class="legend-item"><div class="leg-dot" style="background:var(--walk)"></div>Walking</div>
+  <div class="legend-item"><div class="leg-dot" style="background:var(--purple)"></div>Long session</div>
+  <div class="legend-item"><div class="leg-dot" style="background:var(--recover)"></div>Recovery week</div>
+  <div class="legend-item"><div class="leg-dot" style="background:gold"></div>Race day</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="plan-root"></div>
+
+<!-- MILESTONE TIMELINE -->
+<div class="timeline-section" id="milestones">
+  <div class="section-title">🗓️ Milestone Timeline</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot p1"></div><div class="tl-week">Week 2 · Aug 1</div><div class="tl-title">First 3:00 continuous run (~450 m)</div><div class="tl-desc">Your intervals step up from 2:30 → 3:00 on the long day</div></div>
+    <div class="tl-item"><div class="tl-dot p1"></div><div class="tl-week">Week 4 · Aug 15</div><div class="tl-title">Break the 4-minute barrier (~670 m)</div><div class="tl-desc">First 4:30 block — more than doubling your current interval length</div></div>
+    <div class="tl-item"><div class="tl-dot p2"></div><div class="tl-week">Week 6 · Aug 29</div><div class="tl-title">First 6:00 continuous run (~900 m)</div><div class="tl-desc">You've moved from seconds to real running blocks</div></div>
+    <div class="tl-item"><div class="tl-dot p2"></div><div class="tl-week">Week 8 · Sep 12</div><div class="tl-title">First 10:00 continuous run (~1.5 km)</div><div class="tl-desc">A landmark — 10 minutes without stopping is a big psychological shift</div></div>
+    <div class="tl-item"><div class="tl-dot p3"></div><div class="tl-week">Week 10 · Sep 26</div><div class="tl-title">First 15:00 continuous run (~2.2 km)</div><div class="tl-desc">Half-way to your time goal — the end is visible from here</div></div>
+    <div class="tl-item"><div class="tl-dot p3"></div><div class="tl-week">Week 11 · Oct 3</div><div class="tl-title">First 20:00 continuous run (~3 km)</div><div class="tl-desc">You can now run more than half the target distance non-stop</div></div>
+    <div class="tl-item"><div class="tl-dot p3"></div><div class="tl-week">Week 12 · Oct 10</div><div class="tl-title">First 25:00 continuous run (~3.7 km)</div><div class="tl-desc">Final rehearsal. You're within 1.3 km of the goal.</div></div>
+    <div class="tl-item"><div class="tl-dot gold"></div><div class="tl-week">Week 13 · Oct 18</div><div class="tl-title">🏁 5KM Continuous Run — GOAL ACHIEVED</div><div class="tl-desc">Race day. 13 weeks of work. Run it proud.</div></div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="tips-section">
+  <div class="section-title">💡 Programme Guidelines</div>
+  <div class="tips-grid">
+    <div class="tip-card"><h4>🌡️ Heart Rate is Your Gauge</h4><p>During run intervals stay between <strong>140–162 bpm</strong>. If you regularly exceed 165, slow your pace — don't cut the interval. Speed comes later; aerobic base comes first.</p></div>
+    <div class="tip-card"><h4>🚶 Always Warm Up 5 Minutes</h4><p>Walk briskly for 5 minutes before your first run interval. At 50, your tendons, joints and cardiovascular system need this ramp-up to prevent injury.</p></div>
+    <div class="tip-card"><h4>🐢 Keep Your Run Pace Easy</h4><p>Your ideal pace is <strong>6:30–6:55/km</strong> — the pace you already use. Don't speed up as intervals lengthen. Easy pace builds the aerobic base that makes long runs possible.</p></div>
+    <div class="tip-card"><h4>🔄 Never Skip Recovery Weeks</h4><p>Weeks 4 and 8 are mandatory lighter weeks. Your body builds fitness during rest, not during the run. Skipping these is the #1 cause of injury and plateau.</p></div>
+    <div class="tip-card"><h4>😴 Sleep is the Secret Weapon</h4><p>Aim for 7–8 hours. Growth hormone — which repairs muscle and tendons — is released during deep sleep. Poor sleep undoes good training at any age.</p></div>
+    <div class="tip-card"><h4>📱 Programming WorkOutdoor</h4><p>Update your interval timer at the start of each week. Tap the interval, set Run time + Walk time + repetitions. Always prepend a 5-min walking warm-up segment.</p></div>
+    <div class="tip-card"><h4>📅 Missed a Session?</h4><p>Do not double up to compensate. Just resume from the next planned session. One missed run has zero impact on a 12-week plan. Two weeks off matters; one session doesn't.</p></div>
+    <div class="tip-card"><h4>🦵 Manage Phase 3 Carefully</h4><p>Weeks 9–12 involve long continuous running. If your knees or shins hurt (not just tired) during a long run, walk the rest. Don't power through pain — back off one week and retry.</p></div>
+  </div>
+</div>
+
+<!-- HR ZONES -->
+<div class="hrz-section">
+  <div class="section-title">❤️ Your Heart Rate Zones (Age 50, Max HR ~170 bpm)</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 28px">
+    <div class="hrz-bar">
+      <div class="hrz" style="flex:1;background:#60a5fa">Z1</div>
+      <div class="hrz" style="flex:2;background:#4ade80">Z2</div>
+      <div class="hrz" style="flex:2;background:#facc15">Z3</div>
+      <div class="hrz" style="flex:1.5;background:#f97316">Z4 ← You run here</div>
+      <div class="hrz" style="flex:0.6;background:#ef4444">Z5</div>
+    </div>
+    <div class="hrz-labels">
+      <span>&lt;102</span><span>102–121</span><span>121–140</span><span>140–162</span><span>&gt;162</span>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.7">
+      Your July sessions averaged <strong style="color:var(--text)">138–143 bpm</strong> — straddling Zone 3 and Zone 4, 
+      which is exactly right for building aerobic capacity in interval training. 
+      As you progress into Phase 3 long runs, aim to keep most of the effort in <strong style="color:var(--text)">Zone 3 (121–140 bpm)</strong> — 
+      slightly slower than you run now, but sustainable for 25+ minutes. 
+      Your HR has already dropped <strong style="color:var(--run)">12 bpm</strong> in 10 weeks — by Week 12 you may be running 5km at under 145 bpm.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DATA + RENDER ENGINE
+══════════════════════════════════════════ -->
+<script>
+/* ─── PLAN DATA ─── */
+const PHASES = [
+  {
+    id: 'p1', label: 'Phase 1', icon: '🏗️',
+    title: 'Build Interval Endurance',
+    desc: 'Extend single run blocks from your current 2:00 min to 5:00 min. Foundation work — keep pace easy, focus on completing every rep.',
+    weeks: '1–5'
+  },
+  {
+    id: 'p2', label: 'Phase 2', icon: '📈',
+    title: 'Extend Run Blocks',
+    desc: 'Push through 5 → 10 minutes of continuous running. Fewer reps, longer blocks. You\'ll start to feel like a runner.',
+    weeks: '6–9'
+  },
+  {
+    id: 'p3', label: 'Phase 3', icon: '🏁',
+    title: 'Near-Continuous Running',
+    desc: 'Merge intervals into long continuous runs: 15 → 20 → 25 → 30 min. Race week culminates in your first full 5KM.',
+    weeks: '10–13'
+  }
+];
+
+const WEEKS = [
+  // ─── PHASE 1 ───────────────────────────────────────
+  {
+    week: 1, phase: 'p1', tag: 'build',
+    title: 'Establish Your Baseline',
+    dates: 'Jul 21 – Jul 27, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Jul 22',
+        intervals: [{t:'run',time:'2:00',reps:6},{t:'walk',time:'2:00',reps:6}],
+        duration:'24 min', dist:'~2.6 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Jul 24',
+        intervals: [{t:'run',time:'2:00',reps:6},{t:'walk',time:'2:00',reps:6}],
+        duration:'24 min', dist:'~2.6 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Jul 26',
+        intervals: [{t:'run',time:'2:00',reps:6},{t:'walk',time:'2:00',reps:6}],
+        duration:'24 min', dist:'~2.6 km', notes:[{cls:'note-milestone',txt:'Consolidate 2:00/2:00'}] }
+    ],
+    weeklyKm:'~7.8 km', runTime:'~36 min', longestRun:'2:00 (~300 m)',
+    focus:'Successfully complete 2:00 run / 2:00 walk to build solid aerobic capacity.'
+  },
+  {
+    week: 2, phase: 'p1', tag: 'build',
+    title: 'Consolidate Your Base',
+    dates: 'Jul 28 – Aug 3, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Jul 29',
+        intervals: [{t:'run',time:'2:30',reps:6},{t:'walk',time:'2:00',reps:6}],
+        duration:'27 min', dist:'~2.8 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Jul 31',
+        intervals: [{t:'run',time:'2:30',reps:6},{t:'walk',time:'2:00',reps:6}],
+        duration:'27 min', dist:'~2.8 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Aug 2',
+        intervals: [{t:'run',time:'3:00',reps:5},{t:'walk',time:'2:00',reps:5}],
+        duration:'25 min', dist:'~3.0 km', notes:[{cls:'note-milestone',txt:'⬆ First 3:00 block'}] }
+    ],
+    weeklyKm:'~8.6 km', runTime:'~40 min', longestRun:'3:00 (~450 m)',
+    focus:'30 seconds more per run interval vs. your 2:00 base.'
+  },
+  {
+    week: 3, phase: 'p1', tag: 'build',
+    title: 'Push the Run Blocks',
+    dates: 'Aug 4 – Aug 10, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Aug 5',
+        intervals: [{t:'run',time:'3:00',reps:6},{t:'walk',time:'2:00',reps:6}],
+        duration:'30 min', dist:'~3.1 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Aug 7',
+        intervals: [{t:'run',time:'3:00',reps:6},{t:'walk',time:'2:00',reps:6}],
+        duration:'30 min', dist:'~3.1 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Aug 9',
+        intervals: [{t:'run',time:'3:30',reps:5},{t:'walk',time:'2:00',reps:5}],
+        duration:'27:30 min', dist:'~3.2 km', notes:[{cls:'note-milestone',txt:'⬆ First 3:30 block (~530 m)'}] }
+    ],
+    weeklyKm:'~9.4 km', runTime:'~54 min', longestRun:'3:30 (~530 m)',
+    focus:'Solid 3:00 on weekdays, break 3:30 on the long day.'
+  },
+  {
+    week: 4, phase: 'p1', tag: 'build',
+    title: 'Cross the 4-Minute Barrier',
+    dates: 'Aug 11 – Aug 17, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Aug 12',
+        intervals: [{t:'run',time:'3:30',reps:5},{t:'walk',time:'2:00',reps:5}],
+        duration:'27:30 min', dist:'~3.1 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Aug 14',
+        intervals: [{t:'run',time:'3:30',reps:5},{t:'walk',time:'2:00',reps:5}],
+        duration:'27:30 min', dist:'~3.1 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Aug 16',
+        intervals: [{t:'run',time:'4:30',reps:4},{t:'walk',time:'2:30',reps:4}],
+        duration:'28 min', dist:'~3.3 km', notes:[{cls:'note-milestone',txt:'🎉 First 4+ min block (~670 m)'}] }
+    ],
+    weeklyKm:'~9.5 km', runTime:'~53 min', longestRun:'4:30 (~670 m)',
+    focus:'Break the psychological 4-minute barrier on Saturday.'
+  },
+  {
+    week: 5, phase: 'p1', tag: 'recover',
+    title: 'Recovery — Let Your Body Adapt',
+    dates: 'Aug 18 – Aug 24, 2026',
+    sessions: [
+      { label: 'Session A · Easy', type: 'recover', day: 'Tuesday', date: 'Aug 19',
+        intervals: [{t:'run',time:'2:30',reps:5},{t:'walk',time:'2:30',reps:5}],
+        duration:'25 min', dist:'~2.5 km', notes:[{cls:'note-recover',txt:'↓ Intentionally shorter'}] },
+      { label: 'Session B · Easy', type: 'recover', day: 'Thursday', date: 'Aug 21',
+        intervals: [{t:'run',time:'2:30',reps:5},{t:'walk',time:'2:30',reps:5}],
+        duration:'25 min', dist:'~2.5 km', notes:[{cls:'note-recover',txt:'↓ Intentionally shorter'}] },
+      { label: 'Session C · Return', type: 'regular', day: 'Saturday', date: 'Aug 23',
+        intervals: [{t:'run',time:'3:00',reps:5},{t:'walk',time:'2:00',reps:5}],
+        duration:'25 min', dist:'~3.0 km', notes:[{cls:'note-run',txt:'Confidence builder'}] }
+    ],
+    weeklyKm:'~8 km', runTime:'~35 min', longestRun:'3:00',
+    focus:'Your body builds fitness DURING rest. Do not skip or add extra sessions.'
+  },
+  // ─── PHASE 2 ───────────────────────────────────────
+  {
+    week: 6, phase: 'p2', tag: 'build',
+    title: 'Into 5-Minute Territory',
+    dates: 'Aug 25 – Aug 31, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Aug 26',
+        intervals: [{t:'run',time:'5:00',reps:4},{t:'walk',time:'2:00',reps:4}],
+        duration:'28 min', dist:'~3.4 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Aug 28',
+        intervals: [{t:'run',time:'5:00',reps:4},{t:'walk',time:'2:00',reps:4}],
+        duration:'28 min', dist:'~3.4 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Aug 30',
+        intervals: [{t:'run',time:'6:00',reps:3},{t:'walk',time:'2:00',reps:3}],
+        duration:'24 min', dist:'~3.5 km', notes:[{cls:'note-milestone',txt:'⬆ First 6:00 block (~900 m)'}] }
+    ],
+    weeklyKm:'~10.3 km', runTime:'~1h 2min', longestRun:'6:00 (~900 m)',
+    focus:'Phase 2 begins — fewer reps, longer blocks. Slow down slightly if needed.'
+  },
+  {
+    week: 7, phase: 'p2', tag: 'build',
+    title: 'Consolidate 6-Minute Runs',
+    dates: 'Sep 1 – Sep 7, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Sep 2',
+        intervals: [{t:'run',time:'6:00',reps:3},{t:'walk',time:'2:00',reps:3}],
+        duration:'24 min', dist:'~3.3 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Sep 4',
+        intervals: [{t:'run',time:'6:00',reps:3},{t:'walk',time:'2:00',reps:3}],
+        duration:'24 min', dist:'~3.3 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Sep 6',
+        intervals: [{t:'run',time:'7:00',reps:3},{t:'walk',time:'2:00',reps:3}],
+        duration:'27 min', dist:'~3.8 km', notes:[{cls:'note-milestone',txt:'⬆ First 7:00 block (~1.05 km)'}] }
+    ],
+    weeklyKm:'~10.4 km', runTime:'~1h 7min', longestRun:'7:00 (~1.05 km)',
+    focus:'7 minutes continuous — you\'re now running over 1km without stopping.'
+  },
+  {
+    week: 8, phase: 'p2', tag: 'build',
+    title: 'The 10-Minute Landmark',
+    dates: 'Sep 8 – Sep 14, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Sep 9',
+        intervals: [{t:'run',time:'7:00',reps:3},{t:'walk',time:'2:00',reps:3}],
+        duration:'27 min', dist:'~3.7 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Sep 11',
+        intervals: [{t:'run',time:'8:00',reps:3},{t:'walk',time:'2:00',reps:3}],
+        duration:'30 min', dist:'~4.0 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Sep 13',
+        intervals: [{t:'run',time:'10:00',reps:2},{t:'walk',time:'2:00',reps:2}],
+        duration:'24 min', dist:'~3.9 km', notes:[{cls:'note-milestone',txt:'🎉 First 10:00 block (~1.5 km)'}] }
+    ],
+    weeklyKm:'~11.6 km', runTime:'~1h 22min', longestRun:'10:00 (~1.5 km)',
+    focus:'10 minutes non-stop — a major psychological milestone. Trust your fitness.'
+  },
+  {
+    week: 9, phase: 'p2', tag: 'recover',
+    title: 'Recovery — Consolidate the Gains',
+    dates: 'Sep 15 – Sep 21, 2026',
+    sessions: [
+      { label: 'Session A · Easy', type: 'recover', day: 'Tuesday', date: 'Sep 16',
+        intervals: [{t:'run',time:'4:00',reps:4},{t:'walk',time:'2:00',reps:4}],
+        duration:'24 min', dist:'~2.9 km', notes:[{cls:'note-recover',txt:'↓ Easy week'}] },
+      { label: 'Session B · Easy', type: 'recover', day: 'Thursday', date: 'Sep 18',
+        intervals: [{t:'run',time:'4:00',reps:4},{t:'walk',time:'2:00',reps:4}],
+        duration:'24 min', dist:'~2.9 km', notes:[{cls:'note-recover',txt:'↓ Easy week'}] },
+      { label: 'Session C · Return', type: 'regular', day: 'Saturday', date: 'Sep 20',
+        intervals: [{t:'run',time:'5:00',reps:3},{t:'walk',time:'2:00',reps:3}],
+        duration:'21 min', dist:'~3.0 km', notes:[{cls:'note-run',txt:'Feel the ease — you\'ve improved'}] }
+    ],
+    weeklyKm:'~8.8 km', runTime:'~44 min', longestRun:'5:00',
+    focus:'You are nearly halfway done. Rest and trust the process.'
+  },
+  // ─── PHASE 3 ───────────────────────────────────────
+  {
+    week: 10, phase: 'p3', tag: 'build',
+    title: 'Into Long Continuous Running',
+    dates: 'Sep 22 – Sep 28, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Sep 23',
+        intervals: [{t:'run',time:'10:00',reps:2},{t:'walk',time:'2:00',reps:2}],
+        duration:'24 min', dist:'~3.4 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Sep 18', // Wait, original said Sep 18 but week is 10, should be Sep 25
+        intervals: [{t:'run',time:'12:00',reps:2},{t:'walk',time:'2:00',reps:2}],
+        duration:'28 min', dist:'~4.0 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Sep 27',
+        intervals: [{t:'run',time:'15:00',reps:1},{t:'walk',time:'3:00',reps:1},{t:'run',time:'5:00',reps:1}],
+        duration:'23 min', dist:'~3.9 km', notes:[{cls:'note-milestone',txt:'🎉 First 15:00 block (~2.2 km)'}] }
+    ],
+    weeklyKm:'~11.3 km', runTime:'~1h 26min', longestRun:'15:00 (~2.2 km)',
+    focus:'Phase 3 begins — run blocks become runs. Start slow, finish strong.'
+  },
+  {
+    week: 11, phase: 'p3', tag: 'build',
+    title: 'Cross the 20-Minute Mark',
+    dates: 'Sep 29 – Oct 5, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Sep 30',
+        intervals: [{t:'run',time:'15:00',reps:1},{t:'walk',time:'2:00',reps:1},{t:'run',time:'5:00',reps:1}],
+        duration:'22 min', dist:'~3.6 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Oct 2',
+        intervals: [{t:'run',time:'18:00',reps:1},{t:'walk',time:'2:00',reps:1},{t:'run',time:'5:00',reps:1}],
+        duration:'25 min', dist:'~4.2 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Oct 4',
+        intervals: [{t:'run',time:'20:00',reps:1}],
+        duration:'20 min', dist:'~3.0 km', notes:[{cls:'note-milestone',txt:'🎉 First 20:00 continuous run (~3 km)'}] }
+    ],
+    weeklyKm:'~10.8 km', runTime:'~1h 23min', longestRun:'20:00 (~3.0 km)',
+    focus:'20 minutes continuous — over half of your 5km time goal, non-stop.'
+  },
+  {
+    week: 12, phase: 'p3', tag: 'build',
+    title: 'The Final Push',
+    dates: 'Oct 6 – Oct 12, 2026',
+    sessions: [
+      { label: 'Session A', type: 'regular', day: 'Tuesday', date: 'Oct 7',
+        intervals: [{t:'run',time:'20:00',reps:1},{t:'walk',time:'2:00',reps:1},{t:'run',time:'5:00',reps:1}],
+        duration:'27 min', dist:'~4.2 km', notes:[] },
+      { label: 'Session B', type: 'regular', day: 'Thursday', date: 'Oct 9',
+        intervals: [{t:'run',time:'22:00',reps:1},{t:'walk',time:'2:00',reps:1},{t:'run',time:'5:00',reps:1}],
+        duration:'29 min', dist:'~4.5 km', notes:[] },
+      { label: 'Session C · Long', type: 'long', day: 'Saturday', date: 'Oct 11',
+        intervals: [{t:'run',time:'25:00',reps:1}],
+        duration:'25 min', dist:'~3.7 km', notes:[{cls:'note-milestone',txt:'⬆ First 25:00 run (~3.7 km)'}] }
+    ],
+    weeklyKm:'~12.4 km', runTime:'~1h 32min', longestRun:'25:00 (~3.7 km)',
+    focus:'1.3 km from the goal. Saturday is your final long rehearsal. Run relaxed.'
+  },
+  {
+    week: 13, phase: 'p3', tag: 'race',
+    title: '🏁 Race Week — You\'ve Earned This',
+    dates: 'Oct 13 – Oct 18, 2026',
+    sessions: [
+      { label: 'Session A · Taper', type: 'regular', day: 'Tuesday', date: 'Oct 14',
+        intervals: [{t:'run',time:'20:00',reps:1}],
+        duration:'20 min', dist:'~3.0 km', notes:[{cls:'note-recover',txt:'Easy, relaxed jog'}] },
+      { label: 'Session B · Rest', type: 'rest', day: 'Thursday', date: 'Oct 16',
+        intervals: [{t:'rest',time:'Rest',reps:null}],
+        duration:'Gentle 20–30 min walk', dist:'', notes:[{cls:'note-recover',txt:'Stay off your feet — save the legs'}] },
+      { label: '🏁 Race Day', type: 'race', day: 'Saturday', date: 'Oct 18',
+        intervals: [], duration: '', dist: '', notes:[], isRace: true }
+    ],
+    weeklyKm:'~8 km', runTime:'~20 min', longestRun:'5,000 m 🏆',
+    focus:'Taper, sleep well, stay hydrated. Trust 13 weeks of work.'
+  }
+];
+
+/* ─── RENDER ENGINE ─── */
+function pillClass(t) { return t === 'run' ? 'pill-run' : t === 'walk' ? 'pill-walk' : 'pill-rest'; }
+function pillIcon(t)  { return t === 'run' ? '🏃' : t === 'walk' ? '🚶' : '🛌'; }
+function barClass(type) {
+  return {regular:'bar-regular', long:'bar-long', recover:'bar-recover', race:'bar-race', rest:'bar-rest'}[type] || 'bar-regular';
+}
+function badgeClass(phase, tag) {
+  if (tag === 'race')    return 'badge-race';
+  if (tag === 'recover') return 'badge-rec';
+  return { p1:'badge-p1', p2:'badge-p2', p3:'badge-p3' }[phase] || 'badge-p1';
+}
+function cardPhaseClass(w) {
+  if (w.tag === 'race')    return 'race';
+  if (w.tag === 'recover') return 'recover';
+  return w.phase;
+}
+function tagHtml(tag) {
+  if (tag === 'build')   return '<span class="week-tag tag-build">Build</span>';
+  if (tag === 'recover') return '<span class="week-tag tag-recover">Recovery</span>';
+  if (tag === 'race')    return '<span class="week-tag tag-race">🏆 Race Week</span>';
+  return '';
+}
+
+function renderSession(s) {
+  if (s.isRace) {
+    return `<div class="session-col" style="grid-column: span 1;">
+      <div class="sess-type-bar bar-race"></div>
+      <div class="sess-label">Session C · Race Day</div>
+      <div class="sess-day">Saturday <span class="sess-date-span">Oct 18</span></div>
+      <div class="race-icon">🏁</div>
+      <div class="race-title">5KM Continuous Run</div>
+      <div class="race-sub">Go out at your easy pace (6:45/km).<br/>Don't start fast. Finish strong.<br/>Every step of this race was earned.</div>
+    </div>`;
+  }
+
+  const intRows = s.intervals.map(iv => {
+    if (iv.t === 'rest') {
+      return `<div class="interval-row">
+        <div class="pill pill-rest">
+          <span class="pill-icon">🛌</span>
+          <div><div class="pill-time">Rest</div><div class="pill-lbl">Walk gently</div></div>
+        </div>
+      </div>`;
+    }
+    return `<div class="interval-row">
+      <div class="pill ${pillClass(iv.t)}">
+        <span class="pill-icon">${pillIcon(iv.t)}</span>
+        <div><div class="pill-time">${iv.time}</div><div class="pill-lbl">${iv.t === 'run' ? 'Run' : 'Walk'}</div></div>
+      </div>
+      ${iv.reps ? `<div class="reps-badge">×${iv.reps}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const notes = s.notes.map(n => `<div class="total-note ${n.cls}">${n.txt}</div>`).join('');
+
+  return `<div class="session-col">
+    <div class="sess-type-bar ${barClass(s.type)}"></div>
+    <div class="sess-label">${s.label}</div>
+    <div class="sess-day">${s.day} <span class="sess-date-span">${s.date}</span></div>
+    <div class="intervals">${intRows}</div>
+    <div class="sess-totals">
+      ${s.duration ? `<div class="total-line">Active: <strong>${s.duration}</strong></div>` : ''}
+      ${s.dist ? `<div class="total-line">~distance: <strong>${s.dist}</strong></div>` : ''}
+      <div class="total-line" style="color:var(--muted);font-size:11px">+ 5 min warm-up walk</div>
+      ${notes}
+    </div>
+  </div>`;
+}
+
+function renderWeekCard(w) {
+  const bc  = badgeClass(w.phase, w.tag);
+  const pc  = cardPhaseClass(w);
+
+  return `<div class="week-card ${pc}" id="week${w.week}">
+    <div class="week-header">
+      <div class="week-num-badge ${bc}">${w.week}</div>
+      <div class="week-title-wrap">
+        <div class="week-title">${w.title}</div>
+        <div class="week-dates">${w.dates}</div>
+      </div>
+      ${tagHtml(w.tag)}
+    </div>
+    <div class="sessions-grid">
+      ${w.sessions.map(renderSession).join('')}
+    </div>
+    <div class="week-footer">
+      <div class="foot-stat">Total: <strong>${w.weeklyKm}</strong></div>
+      <div class="foot-stat">Run time: <strong>${w.runTime}</strong></div>
+      <div class="foot-stat">Longest block: <strong>${w.longestRun}</strong></div>
+      <div class="foot-focus">🎯 ${w.focus}</div>
+    </div>
+  </div>`;
+}
+
+function renderPhaseHeader(p) {
+  return `<div class="phase-header" data-phase="${p.id}">
+    <div class="phase-icon ${p.id}">${p.icon}</div>
+    <div class="phase-meta">
+      <div class="phase-label ${p.id}">${p.label} — Weeks ${p.weeks}</div>
+      <div class="phase-title">${p.title}</div>
+      <div class="phase-desc">${p.desc}</div>
+    </div>
+    <div class="phase-weeks-pill">Weeks ${p.weeks}</div>
+  </div>`;
+}
+
+/* ─── BUILD PAGE ─── */
+function buildPlan() {
+  const root = document.getElementById('plan-root');
+  const nav  = document.getElementById('sticky-nav');
+  let html = '';
+  let navHtml = '';
+  let currentPhase = null;
+
+  WEEKS.forEach((w, i) => {
+    // Phase header
+    if (w.phase !== currentPhase && w.tag !== 'recover') {
+      const phaseData = PHASES.find(p => p.id === w.phase);
+      if (phaseData) {
+        html += `<div class="container" data-phase-group="${w.phase}">${renderPhaseHeader(phaseData)}</div>`;
+        currentPhase = w.phase;
+      }
+    }
+
+    html += `<div class="container week-wrap" data-phase="${w.phase}" data-tag="${w.tag}">${renderWeekCard(w)}</div>`;
+
+    // Nav button
+    const btnPhase = w.tag === 'recover' ? w.phase : w.phase;
+    navHtml += `<button class="nav-week-btn phase-${btnPhase}" onclick="scrollToWeek(${w.week},this)" id="navbtn${w.week}">
+      W${w.week}${w.tag === 'recover' ? ' 🔄' : w.tag === 'race' ? ' 🏁' : ''}
+    </button>`;
+
+    // Divider between phases
+    if (w.week === 5 || w.week === 9) {
+      navHtml += '<div class="nav-divider"></div>';
+    }
+  });
+
+  root.innerHTML = html;
+  nav.innerHTML  = navHtml;
+}
+
+function scrollToWeek(n, btn) {
+  document.getElementById('week' + n).scrollIntoView({behavior:'smooth', block:'start'});
+  document.querySelectorAll('.nav-week-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function filterPhase(phase, tab) {
+  document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+
+  document.querySelectorAll('.week-wrap').forEach(el => {
+    const p = el.dataset.phase;
+    const show = phase === 'all' || p === phase;
+    el.style.display = show ? '' : 'none';
+  });
+  document.querySelectorAll('[data-phase-group]').forEach(el => {
+    const p = el.dataset.phaseGroup;
+    const show = phase === 'all' || p === phase;
+    el.style.display = show ? '' : 'none';
+  });
+}
+
+/* ─── SCROLL SPY ─── */
+function setupScrollSpy() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        const n = id.replace('week','');
+        document.querySelectorAll('.nav-week-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById('navbtn' + n);
+        if (btn) btn.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  WEEKS.forEach(w => {
+    const el = document.getElementById('week' + w.week);
+    if (el) obs.observe(el);
+  });
+}
+
+buildPlan();
+setupScrollSpy();
+</script>
+</body>
+</html>
